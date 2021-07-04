@@ -12,9 +12,15 @@ node {
      def myTestContainer = docker.image('node:12')
      myTestContainer.pull()
      myTestContainer.inside {
-     
+     withEnv([
+        
+        'npm_config_cache=npm-cache',
+        
+        'HOME=.',
+            ]) {
        sh 'npm install --only=dev'
        sh 'npm test'
+               }
      }
    }
    stage('ThirdStage-test with a DB') {
