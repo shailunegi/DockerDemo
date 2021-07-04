@@ -1,11 +1,11 @@
 node {
    def commit_id
-   stage('Preparation') {
+   stage('FirstStage-Preparation') {
      checkout scm
      sh "git rev-parse --short HEAD > .git/commit-id"
      commit_id = readFile('.git/commit-id').trim()
    }
-   stage('test') {
+   stage('SecondStage-test') {
      def myTestContainer = docker.image('node:4.6')
      myTestContainer.pull()
      myTestContainer.inside {
@@ -13,7 +13,7 @@ node {
        sh 'npm test'
      }
    }
-   stage('test with a DB') {
+   stage('ThirdStage-test with a DB') {
      def mysql = docker.image('mysql').run("-e MYSQL_ALLOW_EMPTY_PASSWORD=yes") 
      def myTestContainer = docker.image('node:4.6')
      myTestContainer.pull()
@@ -23,7 +23,7 @@ node {
      }                                   
      mysql.stop()
    }                                     
-   stage('docker build/push') {            
+   stage('FourthStage-docker build/push') {            
      docker.withRegistry('https://index.docker.io/v1/', 'snegidockerhub') {
        def app = docker.build("shailunegi/snegi-docker-nodejs-demo-v2:${commit_id}", '.').push()
      }                                     
